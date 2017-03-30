@@ -1,0 +1,17 @@
+Partition Merge Status : Successful - Wed Mar 22 10:50:03 2017
+Quartus II 64-Bit Version : 14.1.1 Build 190 01/19/2015 SJ Full Version
+Revision Name : rc4
+Top-level Entity Name : ksa
+Family : Cyclone V
+Logic utilization (in ALMs) : N/A
+Total registers : 389
+Total pins : 57
+Total virtual pins : 0
+Total block memory bits : 2,560
+Total DSP Blocks : 0
+Total HSSI RX PCSs : 0
+Total HSSI PMA RX Deserializers : 0
+Total HSSI TX PCSs : 0
+Total HSSI PMA TX Serializers : 0
+Total PLLs : 0
+Total DLLs : 0

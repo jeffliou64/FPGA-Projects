@@ -1,0 +1,69 @@
+module generate_address (clk, reset, address_en, direction, address_ready, address_out);
+
+input clk, reset, 
+address_en, //from main finist state machine, also in get_address, allows address to be sent to the output
+direction;  //1 for forward direction, 0 for backward direction
+output address_ready; //feeds to finite state machine, tells whether address is ready to read
+output logic [22:0] address_out;
+
+logic [2:0] state;
+logic [22:0] next_address;
+logic send, next;
+
+
+parameter starting_address = 23'h0;
+parameter ending_address = 23'h7ffff;
+
+
+parameter idle = 3'b000;
+parameter send_address = 3'b001;
+parameter count = 3'b010;
+parameter ready = 3'b100;
+
+
+assign send = state[0];
+assign next = state[1];
+assign address_ready = state[2];
+
+
+		always_ff @(posedge clk, posedge reset) begin
+		if(reset)
+			state = idle;
+		else
+			case (state)
+				idle: if (address_en)
+						state <= send_address;
+							else
+						state <= idle;	
+			send_address : state <= count;
+
+			count: state <= ready;
+
+			ready: state <= idle;
+		endcase
+	end
+
+	always_ff @(posedge send)
+		address_out <= next_address;
+
+
+	always_ff @(posedge next, posedge reset) begin 
+		if (reset)
+			next_address <= starting_address;
+
+			else if (direction) begin
+				if (address_out == ending_address)
+				next_address <= starting_address;
+			else
+				next_address <= next_address + 1;
+			end
+
+			
+			else if (!direction) begin
+				if (address_out == starting_address)
+							next_address <= ending_address;
+				else
+							next_address <= next_address - 1;
+			end
+		end
+endmodule

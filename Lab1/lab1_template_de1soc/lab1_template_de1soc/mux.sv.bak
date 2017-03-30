@@ -1,0 +1,9 @@
+module mux8_1(input logic [2:0] select, input logic [31:0] mux1, mux2, mux3, mux4, mux5, mux6, mux7, mux8,
+	output logic [31:0] output, output logic [7:0] char1, char2, char3);
+	
+	always
+		begin
+			
+		
+		end
+endmodule

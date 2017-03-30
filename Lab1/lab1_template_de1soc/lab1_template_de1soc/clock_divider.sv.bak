@@ -1,0 +1,20 @@
+module clock_divider(input logic inclock, reset, 
+input logic [31:0] div_clock_count, 
+output logic outclock);
+
+	logic [31:0] count;
+	
+	always_ff @(posedge inclock, negedge reset)
+	begin
+		if(!reset) begin
+			count <= 32'b0;
+			outclock <= 1'b0;
+			end
+		else if (count == div_clock_count - 1'b1) begin
+			count <= 32'b0;
+			outclock <= !outclock;
+			end
+		else
+			count <= count + 1'b1;
+	end
+endmodule

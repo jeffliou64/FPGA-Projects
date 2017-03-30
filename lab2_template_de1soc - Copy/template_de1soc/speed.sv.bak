@@ -1,0 +1,20 @@
+module speed (clk, faster, slower, default_speed, address);
+
+input logic clk, faster, slower, default_speed;
+output logic [15:0] address;
+
+		always_ff @(posedge clk) begin
+					if (default_speed)
+							address <= 0;
+							
+					else if (faster)  
+						address <= address + 8'h1;
+						
+					else if (slower)
+						address <= address + 8'h1;
+						
+					else
+						address <= address;
+						
+				end
+			endmodule

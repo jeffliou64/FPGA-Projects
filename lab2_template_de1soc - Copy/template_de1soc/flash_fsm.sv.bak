@@ -1,0 +1,93 @@
+module flash_controller (clock50MHZ, clock22KHZ, reset, read_valid, wait_request, pause, direction, read_data, read, byte_enable, data_out, address);
+	
+	//inputs and outputs
+	input logic clock50MHZ, clock22KHZ, reset, read_valid, wait_request, pause, direction;
+	input logic [31:0] read_data;
+	output logic read;
+	output logic [3:0] byte_enable;
+	output logic [15:0] data_out;
+	output logic [22:0] address;
+	
+	//creating internal wires
+	logic address_enable;
+	logic address_ready;
+	logic low_data_valid;
+	logic high_data_valid;
+	logic [11:0] state;
+	
+	
+	//state parameters
+	
+										   //2198_7654_3210     eight bytes for generate_address inputs, 4 bytes to differentiate similar state values
+	parameter idle =				 12'b1000_0000_0000;	//resting state
+	
+	parameter checkvalid1 =		 12'b0000_0110_1111;	//reads lower bytes of address
+	parameter checkvalid2 = 	 12'b0000_1010_1111;	//reads upper bytes of address
+	
+	parameter clock_22_low1 =	 12'b0010_0000_0000;	//waits until clock22KHZ is off
+	parameter clock_22_high1 =	 12'b0011_0000_0000;	//waits until posedge clock22KHZ for lower byte read
+	
+	parameter clock_22_low2 = 	 12'b0100_0000_0000;	//waits until clock22KHZ is off
+	parameter clock_22_high2 =	 12'b0101_0000_0000;	//waits until posedge clock22KHZ for upper byte read
+	
+	parameter get_address = 	 12'b0000_0001_0000;	//turns on address_enable, allows generate_address() to get an address
+	parameter off_address =		 12'b0001_0000_0000;	//turns off address_enable, stops generate_address() until ready for next one
+	
+	
+	assign high_data_valid = state[7];	
+	assign low_data_valid = state[6];	
+	assign read = state[5];		
+	assign address_enable = state[4];
+	assign byte_enable = {state [3:0]};
+	
+//	generate_address get_add(
+//		
+//		
+//		
+//		
+//		
+//	);
+	
+	always_ff @ (posedge clock50MHZ, posedge reset) begin
+		if (reset) state <= get_address;
+		else begin
+			case (state)
+				idle: 			if (pause) 				state <= idle;
+									else 		  				state <= get_address;
+				
+				get_address: 								state <= off_address;
+				
+				off_address: 	if (address_ready) 	state <= checkvalid1;
+									else						state <= off_address;
+						 
+				checkvalid1: 	if (read_valid)	 	state <= clock_22_low1;
+									else					 	state <= checkvalid1;
+								 
+				clock_22_low1: if (!clock22KHZ)   	state <= clock_22_high1;
+									else				    	state <= clock_22_low1;
+								  
+				clock_22_high1: if (clock22KHZ)   	state <= checkvalid2;
+									 else				    	state <= clock_22_high1;
+				
+				checkvalid2: 	if (read_valid) 	 	state <= clock_22_low2;
+									else 				    	state <= checkvalid2;
+				
+				clock_22_low2: if (!clock22KHZ) 	 	state <= clock_22_high2;
+									else				    	state <= clock_22_low2;
+								  
+				clock_22_high2: if (clock22KHZ)   	state <= idle;
+									 else				    	state <= clock_22_high2;
+				default: state <= idle;
+			endcase
+		end
+	end
+	
+	always_ff @(posedge read_valid)
+		begin
+			if (low_data_valid)
+				data_out <= read_data[15:0];
+			else if (high_data_valid)
+				data_out <= read_data[31:16];
+		end
+		
+endmodule

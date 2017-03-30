@@ -1,0 +1,31 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dD:/lab1_template_de1soc/lab1_template_de1soc/simulation/qsim
+vBasic_Organ_Solution
+!s110 1485365744
+!i10b 1
+!s100 S]c=;P16a`PE?;M9GN?`C2
+I]LU0WEPlI@==8j`2=:R7M2
+V`JN@9S9cnhjKRR_L]QIcM3
+R0
+w1485365688
+8Basic_Organ_Solution.vo
+FBasic_Organ_Solution.vo
+L0 32
+OV;L;10.3c;59
+r1
+!s85 0
+31
+!s108 1485365690.831000
+!s107 Basic_Organ_Solution.vo|
+!s90 -work|work|Basic_Organ_Solution.vo|
+!i113 1
+o-work work
+n@basic_@organ_@solution
